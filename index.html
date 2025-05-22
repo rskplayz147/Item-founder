@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Collection</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Item Collection</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search by ID, Name, or Icon...">
+            <button id="searchButton">Search</button>
+            <div class="filters">
+                <select id="rareTypeFilter">
+                    <option value="ALL">All Rarity</option>
+                    <option value="WHITE">White</option>
+                    <option value="BLUE">Blue</option>
+                    <!-- Add other rarity options -->
+                </select>
+                <select id="itemTypeFilter">
+                    <option value="ALL">All Item Types</option>
+                    <option value="COLLECTION">Collection</option>
+                    <!-- Add other item types -->
+                </select>
+                <select id="collectionTypeFilter">
+                    <option value="ALL">All Collection Types</option>
+                    <option value="VEHICLE_SKIN">Vehicle Skin</option>
+                    <!-- Add other collection types -->
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="items-grid" id="itemsContainer">
+            <!-- Items will be loaded here by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Item Detail Overlay -->
+    <div class="overlay" id="itemOverlay">
+        <div class="overlay-content">
+            <button class="close-btn" id="closeOverlay">×</button>
+            <div class="overlay-image-container">
+                <img id="overlayImage" src="" alt="Item Image">
+            </div>
+            <div class="overlay-details">
+                <h2 id="overlayTitle"></h2>
+                <p id="overlayDescription"></p>
+                <p id="overlayDescription2"></p>
+                <ul>
+                    <li><strong>ID:</strong> <span id="overlayId"></span></li>
+                    <li><strong>Icon Name:</strong> <span id="overlayIcon"></span></li>
+                    <li><strong>Rarity:</strong> <span id="overlayRare"></span></li>
+                    <li><strong>Unique:</strong> <span id="overlayUnique"></span></li>
+                    <li><strong>Type:</strong> <span id="overlayItemType"></span></li>
+                    <li><strong>Collection Type:</strong> <span id="overlayCollectionType"></span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+      </html>
