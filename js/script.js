@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let itemsData = [];
     
     // Load item data
-    fetch('data/itemData.json')
+    fetch('itemData.json')
         .then(response => response.json())
         .then(data => {
             itemsData = data;
@@ -29,10 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const itemImage = document.createElement('img');
             itemImage.className = 'item-image';
-            itemImage.src = `images/ICON/${item.itemID}.png`;
+            itemImage.src = `ICONS/${item.itemID}.png`;
             itemImage.alt = item.description;
             itemImage.onerror = function() {
-                this.src = 'images/placeholder.png'; // Fallback if image doesn't exist
+                this.src = 'placeholder.png'; // Fallback if image doesn't exist
             };
             
             const itemInfo = document.createElement('div');
@@ -60,10 +60,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('overlayCollectionType').textContent = item.collectionType;
         
         const overlayImage = document.getElementById('overlayImage');
-        overlayImage.src = `images/ICON/${item.itemID}.png`;
+        overlayImage.src = `ICONS/${item.itemID}.png`;
         overlayImage.alt = item.description;
         overlayImage.onerror = function() {
-            this.src = 'images/placeholder.png';
+            this.src = 'placeholder.png';
         };
         
         itemOverlay.style.display = 'flex';
