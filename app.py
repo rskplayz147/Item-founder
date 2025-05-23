@@ -5,33 +5,22 @@ from datetime import timedelta
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
 
-# Load itemData from GitHub
+# Load item data
 def load_item_data():
-    local_file = 'itemData.json'
-    github_url = "https://raw.githubusercontent.com/AdityaSharma2403/image/main/itemData.json"
-
-    if os.path.exists(local_file):
-        with open(local_file, 'r', encoding='utf-8') as f:
-            return json.load(f)
-
     try:
-        response = requests.get(github_url)
+        response = requests.get("https://raw.githubusercontent.com/AdityaSharma2403/image/main/itemData.json")
         response.raise_for_status()
-        data = response.json()
-
-        with open(local_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-
-        return data
+        return response.json()
     except Exception as e:
-        print("Error loading itemData:", e)
+        print(f"Error loading item data: {e}")
         return []
 
 ITEM_DATA = load_item_data()
 
+# Routes
 @app.route('/')
 def home():
     if 'token' in session:
@@ -71,81 +60,46 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
+# API Endpoints
 @app.route('/api/search_items', methods=['POST'])
 def search_items():
-    if 'token' not in session:
-        return jsonify({'error': 'Session expired'}), 401
-    
     query = request.json.get('query', '').lower()
-    if not query:
-        return jsonify({'error': 'Empty query'}), 400
-    
-    results = []
-    for item in ITEM_DATA:
-        if query in str(item.get('itemID', '')):
-            results.append(item)
-    
-    if not results:
-        for item in ITEM_DATA:
-            if (query in item.get('description', '').lower() or 
-                query in item.get('description2', '').lower()):
-                results.append(item)
-    
+    results = [item for item in ITEM_DATA 
+              if query in str(item.get('itemID', '')) or
+              query in item.get('description', '').lower() or
+              query in item.get('description2', '').lower()]
     return jsonify({'results': results[:200]})
 
 @app.route('/api/get_item_image/<int:item_id>')
 def get_item_image(item_id):
-    base_url = "https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS"
-    image_url = f"{base_url}/{item_id}.png"
-    fallback_url = "https://i.ibb.co/ksqnMfy6/profile-Icon-pjx8nu2l7ola1-1-removebg-preview.png"
-    
+    image_url = f"https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS/{item_id}.png"
     try:
-        response = requests.head(image_url, timeout=3)
-        if response.status_code == 200:
+        if requests.head(image_url, timeout=3).status_code == 200:
             return jsonify({'image_url': image_url})
-        return jsonify({'image_url': fallback_url})
-    except Exception:
-        return jsonify({'image_url': fallback_url})
+    except:
+        pass
+    return jsonify({'image_url': "https://i.ibb.co/ksqnMfy6/profile-Icon-pjx8nu2l7ola1-1-removebg-preview.png"})
 
 @app.route('/api/prepare_review', methods=['POST'])
 def prepare_review():
-    if 'token' not in session:
-        return jsonify({'error': 'Session expired'}), 401
-    
-    data = request.get_json()
-    selected_items = data.get('items', [])
-    
-    if not selected_items:
+    if not (data := request.get_json()) or not (items := data.get('items')):
         return jsonify({'error': 'No items selected'}), 400
-    
-    session['selected_items'] = selected_items
+    session['selected_items'] = items
     return jsonify({'redirect_url': url_for('review')})
 
 @app.route('/api/add_selected', methods=['POST'])
 def add_selected():
-    if 'token' not in session:
-        return jsonify({'error': 'Session expired'}), 401
-    
-    selected_items = request.json.get('items', [])
-    if not selected_items:
-        return jsonify({'error': 'No items selected'}), 400
-    
-    token_type = session.get('token_type', 'access')
-    token = session.get('token', '')
-    region = session.get('region', 'na')
-    
-    endpoint = 'https://akiru-wishlist.vercel.app/access_add' if token_type == 'access' else 'https://akiru-wishlist.vercel.app/jwt_add'
-    param_name = 'access_token' if token_type == 'access' else 'jwt_token'
-    
+    items = request.json.get('items', [])
     responses = []
-    for item_id in selected_items:
+    for item_id in items:
         try:
             response = requests.get(
-                endpoint,
+                'https://akiru-wishlist.vercel.app/' + 
+                ('access_add' if session.get('token_type') == 'access' else 'jwt_add'),
                 params={
                     'item_id': item_id,
-                    param_name: token,
-                    'region': region
+                    session.get('token_type', 'access') + '_token': session.get('token'),
+                    'region': session.get('region', 'na')
                 },
                 timeout=5
             )
@@ -155,16 +109,11 @@ def add_selected():
                 'response': response.json()
             })
         except Exception as e:
-            responses.append({
-                'item_id': item_id,
-                'status': 500,
-                'error': str(e)
-            })
+            responses.append({'item_id': item_id, 'status': 500, 'error': str(e)})
     
-    if all(res['status'] == 200 for res in responses):
+    if all(r['status'] == 200 for r in responses):
         session.pop('selected_items', None)
-    
     return jsonify({'results': responses})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(host='0.0.0.0', port=5000, debug=True)
