@@ -63,14 +63,34 @@ def search_items():
     
     results = []
     for item in ITEM_DATA:
-        # Search in itemID, description, description2, icon
-        if (query in str(item.get('itemID', '')).lower() or 
-            query in item.get('description', '').lower() or 
-            query in item.get('description2', '').lower() or 
-            query in item.get('icon', '').lower()):
+        # Search in itemID (including partial matches)
+        if query in str(item.get('itemID', '')):
             results.append(item)
     
-    return jsonify({'results': results[:100]})  # Limit to 100 results
+    # If no direct matches, search in descriptions
+    if not results:
+        for item in ITEM_DATA:
+            if (query in item.get('description', '').lower() or 
+                query in item.get('description2', '').lower() or 
+                query in item.get('icon', '').lower()):
+                results.append(item)
+    
+    return jsonify({'results': results[:200]})  # Increased limit to 200 for better discovery
+
+@app.route('/api/get_item_image/<int:item_id>')
+def get_item_image(item_id):
+    base_url = "https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS"
+    image_url = f"{base_url}/{item_id}.png"
+    fallback_url = "https://i.ibb.co/ksqnMfy6/profile-Icon-pjx8nu2l7ola1-1-removebg-preview.png"
+    
+    try:
+        response = requests.head(image_url)
+        if response.status_code == 200:
+            return jsonify({'image_url': image_url})
+        return jsonify({'image_url': fallback_url})
+    except Exception as e:
+        print(f"Error checking image for {item_id}: {e}")
+        return jsonify({'image_url': fallback_url})
 
 @app.route('/api/add_selected', methods=['POST'])
 def add_selected():
