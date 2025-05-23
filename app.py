@@ -1,10 +1,12 @@
 import os
 import json
 import requests
+from datetime import timedelta
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Change this to a secure secret key
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')  # Change for production
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)  # Session expires after 1 hour
 
 # Load itemData from GitHub at startup
 def load_item_data():
@@ -12,7 +14,8 @@ def load_item_data():
     github_url = "https://raw.githubusercontent.com/AdityaSharma2403/image/main/itemData.json"
 
     if os.path.exists(local_file):
-        os.remove(local_file)
+        with open(local_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
 
     try:
         response = requests.get(github_url)
@@ -32,31 +35,48 @@ ITEM_DATA = load_item_data()
 
 @app.route('/')
 def home():
+    if 'token' in session:
+        return redirect(url_for('search'))
     return render_template('home.html')
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
     if request.method == 'POST':
+        session.permanent = True
         session['token_type'] = request.form.get('token_type')
         session['token'] = request.form.get('token')
         session['region'] = request.form.get('region')
         return redirect(url_for('search'))
+    
+    if 'token' in session:
+        return redirect(url_for('search'))
+    
     return render_template('setup.html')
 
 @app.route('/search')
 def search():
     if 'token' not in session:
-        return redirect(url_for('home'))
+        return redirect(url_for('setup'))
     return render_template('search.html')
 
 @app.route('/review')
 def review():
-    if 'token' not in session or 'selected_items' not in session:
-        return redirect(url_for('home'))
+    if 'token' not in session:
+        return redirect(url_for('setup'))
+    if 'selected_items' not in session or not session['selected_items']:
+        return redirect(url_for('search'))
     return render_template('review.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
 
 @app.route('/api/search_items', methods=['POST'])
 def search_items():
+    if 'token' not in session:
+        return jsonify({'error': 'Session expired'}), 401
+    
     query = request.json.get('query', '').lower()
     if not query:
         return jsonify({'error': 'Empty query'}), 400
@@ -75,7 +95,7 @@ def search_items():
                 query in item.get('icon', '').lower()):
                 results.append(item)
     
-    return jsonify({'results': results[:200]})  # Increased limit to 200 for better discovery
+    return jsonify({'results': results[:200]})
 
 @app.route('/api/get_item_image/<int:item_id>')
 def get_item_image(item_id):
@@ -84,13 +104,27 @@ def get_item_image(item_id):
     fallback_url = "https://i.ibb.co/ksqnMfy6/profile-Icon-pjx8nu2l7ola1-1-removebg-preview.png"
     
     try:
-        response = requests.head(image_url)
+        response = requests.head(image_url, timeout=3)
         if response.status_code == 200:
             return jsonify({'image_url': image_url})
         return jsonify({'image_url': fallback_url})
     except Exception as e:
         print(f"Error checking image for {item_id}: {e}")
         return jsonify({'image_url': fallback_url})
+
+@app.route('/api/save_selection', methods=['POST'])
+def save_selection():
+    if 'token' not in session:
+        return jsonify({'error': 'Session expired'}), 401
+    
+    data = request.get_json()
+    selected_items = data.get('items', [])
+    
+    if not selected_items:
+        return jsonify({'error': 'No items selected'}), 400
+    
+    session['selected_items'] = selected_items
+    return jsonify({'success': True})
 
 @app.route('/api/add_selected', methods=['POST'])
 def add_selected():
@@ -117,7 +151,8 @@ def add_selected():
                     'item_id': item_id,
                     param_name: token,
                     'region': region
-                }
+                },
+                timeout=5
             )
             responses.append({
                 'item_id': item_id,
@@ -131,7 +166,11 @@ def add_selected():
                 'error': str(e)
             })
     
+    # Clear selection after successful add
+    if all(res['status'] == 200 for res in responses):
+        session.pop('selected_items', None)
+    
     return jsonify({'results': responses})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')
