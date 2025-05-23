@@ -5,10 +5,10 @@ from datetime import timedelta
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')  # Change for production
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)  # Session expires after 1 hour
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
 
-# Load itemData from GitHub at startup
+# Load itemData from GitHub
 def load_item_data():
     local_file = 'itemData.json'
     github_url = "https://raw.githubusercontent.com/AdityaSharma2403/image/main/itemData.json"
@@ -30,7 +30,6 @@ def load_item_data():
         print("Error loading itemData:", e)
         return []
 
-# Load once on startup
 ITEM_DATA = load_item_data()
 
 @app.route('/')
@@ -83,16 +82,13 @@ def search_items():
     
     results = []
     for item in ITEM_DATA:
-        # Search in itemID (including partial matches)
         if query in str(item.get('itemID', '')):
             results.append(item)
     
-    # If no direct matches, search in descriptions
     if not results:
         for item in ITEM_DATA:
             if (query in item.get('description', '').lower() or 
-                query in item.get('description2', '').lower() or 
-                query in item.get('icon', '').lower()):
+                query in item.get('description2', '').lower()):
                 results.append(item)
     
     return jsonify({'results': results[:200]})
@@ -108,12 +104,11 @@ def get_item_image(item_id):
         if response.status_code == 200:
             return jsonify({'image_url': image_url})
         return jsonify({'image_url': fallback_url})
-    except Exception as e:
-        print(f"Error checking image for {item_id}: {e}")
+    except Exception:
         return jsonify({'image_url': fallback_url})
 
-@app.route('/api/save_selection', methods=['POST'])
-def save_selection():
+@app.route('/api/prepare_review', methods=['POST'])
+def prepare_review():
     if 'token' not in session:
         return jsonify({'error': 'Session expired'}), 401
     
@@ -124,7 +119,7 @@ def save_selection():
         return jsonify({'error': 'No items selected'}), 400
     
     session['selected_items'] = selected_items
-    return jsonify({'success': True})
+    return jsonify({'redirect_url': url_for('review')})
 
 @app.route('/api/add_selected', methods=['POST'])
 def add_selected():
@@ -166,11 +161,10 @@ def add_selected():
                 'error': str(e)
             })
     
-    # Clear selection after successful add
     if all(res['status'] == 200 for res in responses):
         session.pop('selected_items', None)
     
     return jsonify({'results': responses})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
