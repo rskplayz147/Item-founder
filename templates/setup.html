@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup - AKIRU WISHLIST MANAGER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e0e5ff;
+            --secondary: #3f37c9;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --success-light: #e3f8ff;
+            --danger: #f72585;
+            --danger-light: #ffebf2;
+            --warning: #ff9e00;
+            --warning-light: #fff4e0;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #e1e5ee;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .setup-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin: 0 auto;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            background: #fcfcfc;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .alert-error {
+            background-color: var(--danger-light);
+            color: #8a1935;
+            border: 1px solid #f8b3cb;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .setup-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-cog"></i> SETUP YOUR ACCOUNT</h1>
+        </header>
+        
+        <div class="setup-card">
+            <div id="setupAlert" class="alert"></div>
+            
+            <form id="setupForm">
+                <div class="form-group">
+                    <label for="tokenType"><i class="fas fa-key"></i> Token Type</label>
+                    <select id="tokenType" required>
+                        <option value="">Select token type</option>
+                        <option value="access">Access Token</option>
+                        <option value="jwt">JWT Token</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="token"><i class="fas fa-lock"></i> Token</label>
+                    <input type="text" id="token" placeholder="Enter your authentication token" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="region"><i class="fas fa-globe"></i> Region</label>
+                    <select id="region" required>
+                        <option value="">Select your region</option>
+                        <option value="ind">INDIA</option>
+                        <option value="br">BRAZIL</option>
+                        <option value="us">UNITED STATES</option>
+                        <option value="sac">SOUTH ASIA CENTRAL (SAC)</option>
+                        <option value="na">NORTH AMERICA</option>
+                        <option value="sg">SINGAPORE</option>
+                        <option value="ru">RUSSIA</option>
+                        <option value="id">INDONESIA</option>
+                        <option value="tw">TAIWAN</option>
+                        <option value="vn">VIETNAM</option>
+                        <option value="th">THAILAND</option>
+                        <option value="me">MIDDLE EAST</option>
+                        <option value="pk">PAKISTAN</option>
+                        <option value="cis">CIS (Commonwealth of Independent States)</option>
+                        <option value="bd">BANGLADESH</option>
+                        <option value="eu">EUROPE</option>
+                    </select>
+                </div>
+                
+                <button type="submit">
+                    <i class="fas fa-arrow-right"></i> Continue
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('setupForm');
+            const alertBox = document.getElementById('setupAlert');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const tokenType = document.getElementById('tokenType').value;
+                const token = document.getElementById('token').value;
+                const region = document.getElementById('region').value;
+                
+                if (!tokenType || !token || !region) {
+                    showAlert(alertBox, 'Please fill all fields', 'error');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/setup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            'token_type': tokenType,
+                            'token': token,
+                            'region': region
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        window.location.href = '/search';
+                    } else {
+                        showAlert(alertBox, 'Setup failed. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    showAlert(alertBox, 'An error occurred. Please try again.', 'error');
+                    console.error('Setup error:', error);
+                }
+            });
+            
+            function showAlert(element, message, type) {
+                element.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>${message}</span>
+                `;
+                element.className = `alert alert-${type}`;
+                element.style.display = 'flex';
+                
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
