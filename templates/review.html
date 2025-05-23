@@ -145,4 +145,226 @@
             justify-content: center;
             gap: 10px;
             text-decoration: none;
-            border: none
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d1145a;
+        }
+        
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .alert-success {
+            background-color: var(--success-light);
+            color: #0d5670;
+            border: 1px solid #b8e6f5;
+        }
+        
+        .alert-error {
+            background-color: var(--danger-light);
+            color: #8a1935;
+            border: 1px solid #f8b3cb;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-check-circle"></i> REVIEW SELECTION</h1>
+        </header>
+        
+        <div class="review-container">
+            <div class="alert" id="actionAlert"></div>
+            
+            <div class="items-grid" id="itemsGrid"></div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="addToWishlistBtn">
+                    <i class="fas fa-plus"></i> Add to Wishlist
+                    <div class="loading" id="addLoading">
+                        <div class="spinner"></div>
+                    </div>
+                </button>
+                <button class="btn btn-danger" id="cancelBtn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const itemsGrid = document.getElementById('itemsGrid');
+            const addToWishlistBtn = document.getElementById('addToWishlistBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const addLoading = document.getElementById('addLoading');
+            const actionAlert = document.getElementById('actionAlert');
+            
+            let selectedItems = [];
+            
+            // Load selected items from session storage
+            if (sessionStorage.getItem('selectedItems')) {
+                selectedItems = JSON.parse(sessionStorage.getItem('selectedItems'));
+                displaySelectedItems();
+            } else {
+                // No items selected, redirect back
+                window.location.href = '/search';
+            }
+            
+            function displaySelectedItems() {
+                itemsGrid.innerHTML = '';
+                
+                if (selectedItems.length === 0) {
+                    itemsGrid.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 30px;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 2rem; color: #ccc;"></i>
+                            <p>No items selected</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                selectedItems.forEach(itemId => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'review-item';
+                    itemDiv.innerHTML = `
+                        <div class="remove-item" data-item-id="${itemId}">×</div>
+                        <img src="https://raw.githubusercontent.com/AdityaSharma2403/image/main/ICON/${itemId}.png" 
+                             onerror="this.src='https://i.ibb.co/ksqnMfy6/profile-Icon-pjx8nu2l7ola1-1-removebg-preview.png'">
+                        <div class="item-info">
+                            <div class="item-id">ID: ${itemId}</div>
+                        </div>
+                    `;
+                    
+                    itemsGrid.appendChild(itemDiv);
+                });
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-item').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const itemId = parseInt(this.getAttribute('data-item-id'));
+                        selectedItems = selectedItems.filter(id => id !== itemId);
+                        sessionStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+                        displaySelectedItems();
+                    });
+                });
+            }
+            
+            // Add to wishlist functionality
+            addToWishlistBtn.addEventListener('click', async function() {
+                if (selectedItems.length === 0) {
+                    showAlert(actionAlert, 'No items to add', 'error');
+                    return;
+                }
+                
+                addLoading.style.display = 'flex';
+                
+                try {
+                    const response = await fetch('/api/add_selected', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            items: selectedItems
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showAlert(actionAlert, 'Items added to wishlist successfully!', 'success');
+                        // Clear selection
+                        selectedItems = [];
+                        sessionStorage.removeItem('selectedItems');
+                        setTimeout(() => {
+                            window.location.href = '/search';
+                        }, 2000);
+                    } else {
+                        showAlert(actionAlert, data.error || 'Failed to add some items', 'error');
+                    }
+                } catch (error) {
+                    showAlert(actionAlert, 'An error occurred. Please try again.', 'error');
+                    console.error('Add to wishlist error:', error);
+                } finally {
+                    addLoading.style.display = 'none';
+                }
+            });
+            
+            // Cancel button functionality
+            cancelBtn.addEventListener('click', function() {
+                window.location.href = '/search';
+            });
+            
+            function showAlert(element, message, type) {
+                element.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                element.className = `alert alert-${type}`;
+                element.style.display = 'flex';
+                
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
