@@ -14,11 +14,7 @@
             --light: #f8f9fa;
             --dark: #212529;
             --success: #4cc9f0;
-            --success-light: #e3f8ff;
             --danger: #f72585;
-            --danger-light: #ffebf2;
-            --warning: #ff9e00;
-            --warning-light: #fff4e0;
             --border-radius: 12px;
             --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
@@ -35,44 +31,26 @@
             background-color: #f5f7fa;
             color: var(--dark);
             line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
         
         .container {
-            max-width: 100%;
-            width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
         }
         
         header {
             text-align: center;
             margin-bottom: 20px;
             padding: 20px 0;
-            border-bottom: 1px solid #e1e5ee;
-        }
-        
-        h1 {
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
         
         .search-container {
             background: white;
             border-radius: var(--border-radius);
             padding: 25px;
-            margin-bottom: 20px;
             box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
         }
         
         .search-box {
@@ -86,14 +64,7 @@
             padding: 12px 15px;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 0.95rem;
-            transition: var(--transition);
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
+            font-size: 1rem;
         }
         
         .search-btn {
@@ -103,12 +74,6 @@
             padding: 0 20px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        
-        .search-btn:hover {
-            background-color: var(--secondary);
         }
         
         .results-container {
@@ -124,15 +89,7 @@
             padding: 15px;
             box-shadow: var(--box-shadow);
             cursor: pointer;
-            transition: var(--transition);
             border: 2px solid transparent;
-            position: relative;
-            text-align: center;
-        }
-        
-        .item-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
         
         .item-card.selected {
@@ -144,132 +101,34 @@
             height: 120px;
             object-fit: contain;
             margin-bottom: 10px;
-            border-radius: 6px;
-        }
-        
-        .item-id {
-            font-size: 0.85rem;
-            color: var(--primary);
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-        
-        .item-name {
-            font-size: 0.85rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .item-desc2 {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 5px;
-            font-style: italic;
-        }
-        
-        .selected-items {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--box-shadow);
-            margin-top: 20px;
-        }
-        
-        .selected-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .selected-title h3 {
-            color: var(--primary);
-            font-size: 1.1rem;
-        }
-        
-        .selected-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px;
-        }
-        
-        .selected-item {
-            position: relative;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .selected-item img {
-            width: 100%;
-            height: 100px;
-            object-fit: contain;
-            border-radius: 6px;
-            border: 2px solid transparent;
-            background: #f5f5f5;
-            padding: 5px;
-        }
-        
-        .selected-item:hover img {
-            border-color: var(--danger);
-        }
-        
-        .remove-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger);
-            color: white;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            opacity: 0;
-            transition: var(--transition);
-            z-index: 2;
-        }
-        
-        .selected-item:hover .remove-btn {
-            opacity: 1;
         }
         
         .next-btn {
-            background-color: var(--success);
+            background-color: var(--primary);
             color: white;
             border: none;
             padding: 14px 20px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: var(--transition);
+            width: 100%;
+            margin-top: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            width: 100%;
-            margin-top: 20px;
-        }
-        
-        .next-btn:hover {
-            background-color: #3ab7d8;
         }
         
         .next-btn:disabled {
-            background-color: #ccc;
+            opacity: 0.7;
             cursor: not-allowed;
         }
         
         .loading {
             display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            margin-left: 8px;
+        }
+        
+        .next-btn.loading .loading {
+            display: block;
         }
         
         .spinner {
@@ -278,71 +137,15 @@
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 1s linear infinite;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-            color: #777;
-            grid-column: 1 / -1;
-        }
-        
-        .empty-state i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #ccc;
-        }
-        
-        .highlight {
-            background-color: rgba(255, 235, 59, 0.3);
-            padding: 0 2px;
-            border-radius: 3px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .results-container {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            }
-            
-            .selected-grid {
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            }
-            
-            .item-image {
-                height: 100px;
-            }
-            
-            .selected-item img {
-                height: 80px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .results-container {
-                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            }
-            
-            .search-box {
-                flex-direction: column;
-            }
-            
-            .search-btn {
-                padding: 12px;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- [Rest of the HTML content remains the same as previously provided] -->
     <div class="container">
         <header>
             <h1><i class="fas fa-search"></i> SEARCH ITEMS</h1>
@@ -350,74 +153,45 @@
         
         <div class="search-container">
             <div class="search-box">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search by ID, name or icon..." autofocus>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search by ID or name..." autofocus>
                 <button class="search-btn" id="searchBtn">
                     <i class="fas fa-search"></i>
                 </button>
             </div>
             
-            <div class="loading" id="searchLoading">
-                <div class="spinner"></div>
-            </div>
-            
             <div class="results-container" id="resultsContainer">
-                <div class="empty-state" id="emptyResults">
-                    <i class="fas fa-search"></i>
+                <div style="grid-column:1/-1;text-align:center;padding:40px;">
+                    <i class="fas fa-search" style="font-size:2rem;color:#ccc;margin-bottom:15px;"></i>
                     <p>Search for items to display results</p>
                 </div>
             </div>
         </div>
         
-        <div class="selected-items" id="selectedItems" style="display: none;">
-            <div class="selected-title">
-                <h3><i class="fas fa-check-circle"></i> Selected Items</h3>
-                <span id="selectedCount">0 items</span>
-            </div>
-            <div class="selected-grid" id="selectedGrid"></div>
-        </div>
-        
         <button class="next-btn" id="nextBtn" disabled>
-            <i class="fas fa-arrow-right"></i> Review Selection
-            <div class="loading" id="nextLoading">
+            <span>Review Selection</span>
+            <div class="loading">
                 <div class="spinner"></div>
             </div>
         </button>
     </div>
 
     <script>
-        // [JavaScript code remains the same as previously provided]
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
-            const searchLoading = document.getElementById('searchLoading');
             const resultsContainer = document.getElementById('resultsContainer');
-            const emptyResults = document.getElementById('emptyResults');
-            const selectedItems = document.getElementById('selectedItems');
-            const selectedGrid = document.getElementById('selectedGrid');
-            const selectedCount = document.getElementById('selectedCount');
             const nextBtn = document.getElementById('nextBtn');
             
-            let selectedItemsList = [];
-            
-            if (sessionStorage.getItem('selectedItems')) {
-                selectedItemsList = JSON.parse(sessionStorage.getItem('selectedItems'));
-                updateSelectedItems();
-            }
+            let selectedItems = [];
             
             searchBtn.addEventListener('click', searchItems);
             searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchItems();
-                }
+                if (e.key === 'Enter') searchItems();
             });
             
             async function searchItems() {
                 const query = searchInput.value.trim();
                 if (!query) return;
-                
-                searchLoading.style.display = 'flex';
-                emptyResults.style.display = 'none';
-                resultsContainer.innerHTML = '';
                 
                 try {
                     const response = await fetch('/api/search_items', {
@@ -429,131 +203,96 @@
                     });
                     
                     const data = await response.json();
-                    
-                    if (data.results && data.results.length > 0) {
-                        displayResults(data.results, query);
-                    } else {
-                        emptyResults.style.display = 'flex';
-                        emptyResults.innerHTML = `
-                            <i class="fas fa-exclamation-circle"></i>
-                            <p>No items found for "${query}"</p>
-                        `;
-                    }
+                    displayResults(data.results || []);
                 } catch (error) {
                     console.error('Search error:', error);
-                    emptyResults.style.display = 'flex';
-                    emptyResults.innerHTML = `
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>Error searching items</p>
-                    `;
-                } finally {
-                    searchLoading.style.display = 'none';
                 }
             }
             
-            function displayResults(items, query) {
+            function displayResults(items) {
                 resultsContainer.innerHTML = '';
                 
-                items.forEach(item => {
-                    const isSelected = selectedItemsList.includes(item.itemID);
-                    const itemId = String(item.itemID);
-                    const description = item.description || '';
-                    const description2 = item.description2 || '';
-                    
-                    const highlightedId = itemId.includes(query) ? 
-                        itemId.replace(new RegExp(query, 'gi'), match => 
-                            `<span class="highlight">${match}</span>`) : itemId;
-                    
-                    const highlightedDesc = description.toLowerCase().includes(query.toLowerCase()) ? 
-                        description.replace(new RegExp(query, 'gi'), match => 
-                            `<span class="highlight">${match}</span>`) : description;
-                    
-                    const itemCard = document.createElement('div');
-                    itemCard.className = `item-card ${isSelected ? 'selected' : ''}`;
-                    itemCard.innerHTML = `
-                        <img src="https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS/${item.itemID}.png?${Date.now()}" 
-                             class="item-image" 
-                             onerror="this.onerror=null;this.src='https://i.ibb.co/ksqnMfy6/profile-Icon-pjx8nu2l7ola1-1-removebg-preview.png'">
-                        <div class="item-id">ID: ${highlightedId}</div>
-                        <div class="item-name" title="${description}">
-                            ${highlightedDesc || 'No description'}
+                if (items.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;padding:40px;">
+                            <i class="fas fa-exclamation-circle" style="font-size:2rem;color:#ccc;margin-bottom:15px;"></i>
+                            <p>No items found</p>
                         </div>
-                        ${description2 ? `<div class="item-desc2">${description2}</div>` : ''}
                     `;
-                    
-                    itemCard.addEventListener('click', () => {
-                        toggleItemSelection(item.itemID);
-                    });
-                    
-                    resultsContainer.appendChild(itemCard);
-                });
-            }
-            
-            function toggleItemSelection(itemId) {
-                const index = selectedItemsList.indexOf(itemId);
-                
-                if (index === -1) {
-                    selectedItemsList.push(itemId);
-                } else {
-                    selectedItemsList.splice(index, 1);
+                    return;
                 }
                 
-                updateSelectedItems();
-                highlightSelectedItems();
-            }
-            
-            function updateSelectedItems() {
-                sessionStorage.setItem('selectedItems', JSON.stringify(selectedItemsList));
-                selectedCount.textContent = `${selectedItemsList.length} item${selectedItemsList.length !== 1 ? 's' : ''}`;
-                
-                if (selectedItemsList.length > 0) {
-                    selectedItems.style.display = 'block';
-                    nextBtn.disabled = false;
-                } else {
-                    selectedItems.style.display = 'none';
-                    nextBtn.disabled = true;
-                }
-                
-                selectedGrid.innerHTML = '';
-                selectedItemsList.forEach(itemId => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'selected-item';
-                    itemDiv.innerHTML = `
-                        <img src="https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS/${itemId}.png?${Date.now()}" 
-                             onerror="this.onerror=null;this.src='https://i.ibb.co/ksqnMfy6/profile-Icon-pjx8nu2l7ola1-1-removebg-preview.png'">
-                        <div class="remove-btn">×</div>
-                    `;
-                    
-                    itemDiv.addEventListener('click', (e) => {
-                        if (e.target.classList.contains('remove-btn') || e.target.tagName === 'IMG') {
-                            const index = selectedItemsList.indexOf(itemId);
-                            if (index !== -1) {
-                                selectedItemsList.splice(index, 1);
-                                updateSelectedItems();
-                                highlightSelectedItems();
-                            }
-                        }
-                    });
-                    
-                    selectedGrid.appendChild(itemDiv);
-                });
-            }
-            
-            function highlightSelectedItems() {
-                const itemCards = document.querySelectorAll('.item-card');
-                itemCards.forEach(card => {
-                    const itemId = parseInt(card.querySelector('.item-id').textContent.replace(/<[^>]*>/g, '').replace('ID: ', ''));
-                    if (selectedItemsList.includes(itemId)) {
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    if (selectedItems.includes(item.itemID)) {
                         card.classList.add('selected');
-                    } else {
-                        card.classList.remove('selected');
                     }
+                    
+                    card.innerHTML = `
+                        <img src="https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS/${item.itemID}.png?${Date.now()}" 
+                             class="item-image"
+                             onerror="this.src='https://i.ibb.co/ksqnMfy6/profile-Icon-pjx8nu2l7ola1-1-removebg-preview.png'">
+                        <div>ID: ${item.itemID}</div>
+                        <div style="font-size:0.8rem;margin-top:5px;">${item.description || ''}</div>
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        toggleSelection(item.itemID);
+                    });
+                    
+                    resultsContainer.appendChild(card);
                 });
             }
             
-            nextBtn.addEventListener('click', function() {
-                sessionStorage.setItem('selectedItems', JSON.stringify(selectedItemsList));
-                window.location.href = '/review';
+            function toggleSelection(itemId) {
+                const index = selectedItems.indexOf(itemId);
+                if (index === -1) {
+                    selectedItems.push(itemId);
+                } else {
+                    selectedItems.splice(index, 1);
+                }
+                updateSelection();
+            }
+            
+            function updateSelection() {
+                document.querySelectorAll('.item-card').forEach(card => {
+                    const cardId = parseInt(card.textContent.match(/ID: (\d+)/)[1]);
+                    card.classList.toggle('selected', selectedItems.includes(cardId));
+                });
+                
+                nextBtn.disabled = selectedItems.length === 0;
+            }
+            
+            nextBtn.addEventListener('click', async function() {
+                if (selectedItems.length === 0) return;
+                
+                nextBtn.classList.add('loading');
+                nextBtn.disabled = true;
+                
+                try {
+                    const response = await fetch('/api/prepare_review', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ items: selectedItems })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        alert(data.error || 'Error preparing review');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                } finally {
+                    nextBtn.classList.remove('loading');
+                    nextBtn.disabled = false;
+                }
             });
         });
     </script>
