@@ -220,6 +220,7 @@
         
         <div class="loading" id="loadingIndicator">
             <div class="spinner"></div>
+            <p>Searching...</p>
         </div>
         
         <div class="results-container" id="resultsContainer"></div>
@@ -264,11 +265,16 @@
                 itemDetails.classList.remove('active');
                 
                 fetch(`/api/search?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         loadingIndicator.style.display = 'none';
                         
-                        if (data.length === 0) {
+                        if (!data || data.length === 0) {
                             resultsContainer.innerHTML = '<div class="no-results">No items found matching your search.</div>';
                             return;
                         }
@@ -277,7 +283,10 @@
                             const itemCard = document.createElement('div');
                             itemCard.className = 'item-card';
                             itemCard.innerHTML = `
-                                <img src="${item.image_url}" alt="${item.description}" class="item-image" onerror="this.src='https://via.placeholder.com/200?text=Image+Not+Available'">
+                                <img src="${item.image_url || 'https://via.placeholder.com/200?text=No+Image'}" 
+                                     alt="${item.description || 'Item image'}" 
+                                     class="item-image" 
+                                     onerror="this.src='https://via.placeholder.com/200?text=Image+Not+Available'">
                                 <div class="item-name">${item.description || 'No description'}</div>
                             `;
                             
@@ -286,21 +295,28 @@
                         });
                     })
                     .catch(error => {
+                        console.error('Search error:', error);
                         loadingIndicator.style.display = 'none';
-                        console.error('Error:', error);
-                        resultsContainer.innerHTML = '<div class="no-results">An error occurred while searching. Please try again.</div>';
+                        resultsContainer.innerHTML = `
+                            <div class="no-results">
+                                <p>Could not complete search.</p>
+                                <p>${error.message}</p>
+                                <p>Please try again later.</p>
+                            </div>
+                        `;
                     });
             }
             
             function showItemDetails(item) {
                 itemDetails.innerHTML = `
+                    <h3>${item.description || 'Item Details'}</h3>
                     <div class="detail-row">
                         <div class="detail-label">Item ID:</div>
-                        <div class="detail-value">${item.itemID}</div>
+                        <div class="detail-value">${item.itemID || 'N/A'}</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Icon Name:</div>
-                        <div class="detail-value">${item.icon}</div>
+                        <div class="detail-value">${item.icon || 'N/A'}</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Description:</div>
@@ -329,8 +345,6 @@
                 `;
                 
                 itemDetails.classList.add('active');
-                
-                // Scroll to details
                 itemDetails.scrollIntoView({ behavior: 'smooth' });
             }
         });
