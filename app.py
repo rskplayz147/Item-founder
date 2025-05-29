@@ -20,11 +20,11 @@ def search_items():
     
     results = []
     for item in items:
-        # Search in itemID, icon, description, description2
-        if (query in str(item['itemID']) or \
-           (query in item['icon'].lower()) or \
-           (query in item.get('description', '').lower()) or \
-           (query in item.get('description2', '').lower()):
+        # Fixed the parentheses issue here
+        if (query in str(item['itemID']) or 
+            query in item['icon'].lower() or 
+            query in item.get('description', '').lower() or 
+            query in item.get('description2', '').lower()):
             
             # Add image URL to the item data
             item_with_image = item.copy()
