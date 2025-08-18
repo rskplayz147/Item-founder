@@ -5,9 +5,13 @@ import io
 
 app = Flask(__name__)
 
-# Load item data
+# Load item data from itemData.json
 with open('itemData.json', 'r') as f:
     items = json.load(f)
+
+# Load fallback item data from items-OB50-live.json
+with open('items-OB50-live.json', 'r') as f:
+    fallback_items = json.load(f)
 
 @app.route('/')
 def index():
@@ -49,7 +53,6 @@ def get_image_by_icon():
             try:
                 response = requests.get(image_url)
                 if response.status_code == 200:
-                    # Return the raw image data
                     return send_file(
                         io.BytesIO(response.content),
                         mimetype='image/png',
@@ -69,14 +72,13 @@ def get_image_by_id():
     if not item_id:
         return jsonify({'error': 'Item ID is required'}), 400
     
-    # Verify if item_id exists in itemData.json
+    # Check if item_id exists in itemData.json
     for item in items:
         if str(item['itemID']) == item_id:
             image_url = f"https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS/{item_id}.png"
             try:
                 response = requests.get(image_url)
                 if response.status_code == 200:
-                    # Return the raw image data
                     return send_file(
                         io.BytesIO(response.content),
                         mimetype='image/png',
@@ -87,7 +89,24 @@ def get_image_by_id():
             except requests.RequestException as e:
                 return jsonify({'error': f'Failed to fetch image: {str(e)}'}), 500
     
-    return jsonify({'error': 'Item ID not found in item data'}), 404
+    # If not found in itemData.json, check items-OB50-live.json
+    for item in fallback_items:
+        if str(item.get('itemID')) == item_id:  # Use .get() to safely access itemID
+            image_url = f"https://raw.githubusercontent.com/I-SHOW-AKIRU200/AKIRU-ICONS/main/ICONS/{item_id}.png"
+            try:
+                response = requests.get(image_url)
+                if response.status_code == 200:
+                    return send_file(
+                        io.BytesIO(response.content),
+                        mimetype='image/png',
+                        as_attachment=False
+                    )
+                else:
+                    return jsonify({'error': 'Image not found for the given item ID in fallback data'}), 404
+            except requests.RequestException as e:
+                return jsonify({'error': f'Failed to fetch image: {str(e)}'}), 500
+    
+    return jsonify({'error': 'Item ID not found in either item data or fallback data'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
