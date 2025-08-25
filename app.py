@@ -47,7 +47,7 @@ def fetch_image(item_id: str) -> Optional[send_file]:
         return send_file(
             io.BytesIO(response.content),
             mimetype="image/png",
-            as_attachment=True,
+            as_attachment=False,  # Display image in browser instead of downloading
             download_name=f"{item_id}.png"
         )
     except requests.RequestException as e:
@@ -84,7 +84,7 @@ def search_items():
 @app.route("/api/image/icon", methods=["GET"])
 def get_image_by_icon():
     """
-    Fetch image by icon name.
+    Fetch and display image by icon name.
     Returns the image file or an error message.
     """
     icon_name = request.args.get("icon", "").lower().strip()
@@ -103,7 +103,7 @@ def get_image_by_icon():
 @app.route("/api/image/id", methods=["GET"])
 def get_image_by_id():
     """
-    Fetch image by item ID from main or fallback items.
+    Fetch and display image by item ID from main or fallback items.
     Returns the image file or an error message.
     """
     item_id = request.args.get("id", "").strip()
